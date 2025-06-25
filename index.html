@@ -1,1 +1,137 @@
-Raja 101 demo
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Raja 101 - Color Game Demo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    .game-box {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+    .timer {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .buttons button {
+      margin: 10px;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      color: #fff;
+      cursor: pointer;
+    }
+    .red { background: #e63946; }
+    .green { background: #2a9d8f; }
+    .locked {
+      background: #999 !important;
+      cursor: not-allowed;
+    }
+    .wallet {
+      margin-top: 20px;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #f1c40f;
+    }
+  </style>
+</head>
+<body>
+  <h1>Raja 101 - Color Game Demo</h1>
+  <div class="game-box">
+    <div class="timer" id="timer">Time left: 30s</div>
+    <div class="buttons">
+      <button class="red" id="redBtn">Bet Red</button>
+      <button class="green" id="greenBtn">Bet Green</button>
+    </div>
+    <div class="wallet">
+      Bonus Wallet: ₹<span id="bonus">50</span><br>
+      Deposit Wallet: ₹<span id="deposit">0</span><br>
+      Total Turnover: ₹<span id="turnover">0</span>
+    </div>
+    <div class="result" id="result">Waiting for result...</div>
+  </div>
+
+  <script>
+    let time = 30;
+    let lockTime = 5;
+    let redTotal = 0;
+    let greenTotal = 0;
+    let bonus = 50;
+    let deposit = 0;
+    let turnover = 0;
+    let locked = false;
+
+    const timerEl = document.getElementById('timer');
+    const redBtn = document.getElementById('redBtn');
+    const greenBtn = document.getElementById('greenBtn');
+    const bonusEl = document.getElementById('bonus');
+    const depositEl = document.getElementById('deposit');
+    const turnoverEl = document.getElementById('turnover');
+    const resultEl = document.getElementById('result');
+
+    function updateTimer() {
+      if (time > 0) {
+        time--;
+        timerEl.textContent = `Time left: ${time}s`;
+        if (time === lockTime) {
+          locked = true;
+          redBtn.classList.add('locked');
+          greenBtn.classList.add('locked');
+        }
+      } else {
+        clearInterval(gameTimer);
+        let win = (redTotal > greenTotal) ? 'Green' : 'Red';
+        resultEl.textContent = `${win} Wins!`;
+        if (win === 'Red') deposit += redTotal * 2;
+        if (win === 'Green') deposit += greenTotal * 2;
+        turnover += redTotal + greenTotal;
+        bonusEl.textContent = bonus;
+        depositEl.textContent = deposit;
+        turnoverEl.textContent = turnover;
+        redTotal = 0;
+        greenTotal = 0;
+        setTimeout(startGame, 5000);
+      }
+    }
+
+    function startGame() {
+      time = 30;
+      locked = false;
+      redBtn.classList.remove('locked');
+      greenBtn.classList.remove('locked');
+      resultEl.textContent = 'Waiting for result...';
+      gameTimer = setInterval(updateTimer, 1000);
+    }
+
+    redBtn.addEventListener('click', () => {
+      if (!locked) {
+        redTotal += 10;
+        resultEl.textContent = 'Bet ₹10 on Red';
+      }
+    });
+
+    greenBtn.addEventListener('click', () => {
+      if (!locked) {
+        greenTotal += 10;
+        resultEl.textContent = 'Bet ₹10 on Green';
+      }
+    });
+
+    let gameTimer = setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>
